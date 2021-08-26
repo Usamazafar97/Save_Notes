@@ -14,8 +14,9 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-public class AddNoteActivity extends AppCompatActivity {
+public class AddEditNoteActivity extends AppCompatActivity {
 
+    public static final String EXTRA_ID = "ID";
     public static final String EXTRA_TITLE = "TITLE";
     public static final String EXTRA_DESCRIPTION = "DESCRIPTION";
     public static final String EXTRA_PRIORITY = "PRIORITY";
@@ -36,8 +37,16 @@ public class AddNoteActivity extends AppCompatActivity {
         numberPickerProperty.setMaxValue(10);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
-        setTitle("Add Note");
 
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_ID)){
+            setTitle("Edit Note");
+            etTitle.setText(intent.getStringExtra(EXTRA_TITLE));
+            etDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            numberPickerProperty.setValue(intent.getIntExtra(EXTRA_PRIORITY,1));
+        }
+        else
+            setTitle("Add Note");
     }
 
     @Override
@@ -65,14 +74,22 @@ public class AddNoteActivity extends AppCompatActivity {
         if (title.isEmpty() || description.isEmpty()){
             Toast.makeText(this, "Please enter title and description", Toast.LENGTH_SHORT).show();
         }
+        else {
+            Intent data = new Intent();
+            data.putExtra(EXTRA_TITLE,title);
+            data.putExtra(EXTRA_DESCRIPTION,description);
+            data.putExtra(EXTRA_PRIORITY,priority);
 
-        Intent data = new Intent();
-        data.putExtra(EXTRA_TITLE,title);
-        data.putExtra(EXTRA_DESCRIPTION,description);
-        data.putExtra(EXTRA_PRIORITY,priority);
+            int id = getIntent().getIntExtra(EXTRA_ID,-1);
+            if (id == -1)
+                data.putExtra(EXTRA_ID,id);
+            else
+                data.putExtra(EXTRA_ID,id);
+            setResult(RESULT_OK,data);
+            finish();
+        }
 
-        setResult(RESULT_OK,data);
-        finish();
+
 
     }
 }
